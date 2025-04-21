@@ -170,7 +170,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                       <div key={option + i} className="radio-group">
                         <RadioGroupItem value={option} id={option} />
                         <Label htmlFor={option} className="cursor-pointer">
-                          {option}
+                          {option.charAt(0).toUpperCase() + option.slice(1)}
                         </Label>
                       </div>
                     ))}

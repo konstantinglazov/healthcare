@@ -34,3 +34,16 @@ export interface Appointment extends Models.Document {
   userId: string;
   cancellationReason: string | null;
 }
+
+export type UpdateAppointmentParams = {
+  userId: string;
+  appointmentId: string;
+  appointment: {
+    primaryPhysician: string;
+    schedule: Date;
+    status: "pending" | "scheduled" | "cancelled";
+    cancellationReason?: string;
+  };
+  type: "create" | "schedule" | "cancel";
+  timeZone: string;
+};
