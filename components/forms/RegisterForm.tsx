@@ -37,6 +37,7 @@ const RegisterForm = ({ user }: { user: User }) => {
       name: user.name,
       email: user.email,
       phone: user.phone,
+      gender: "Male", // Update to capitalized
     },
   });
 
@@ -170,7 +171,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                       <div key={option + i} className="radio-group">
                         <RadioGroupItem value={option} id={option} />
                         <Label htmlFor={option} className="cursor-pointer">
-                          {option.charAt(0).toUpperCase() + option.slice(1)}
+                          {option} {/* Already displays "Male", "Female", "Other" */}
                         </Label>
                       </div>
                     ))}
