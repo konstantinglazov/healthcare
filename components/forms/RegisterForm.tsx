@@ -37,7 +37,7 @@ const RegisterForm = ({ user }: { user: User }) => {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      gender: "Male", // Update to capitalized
+      gender: "male",
     },
   });
 
