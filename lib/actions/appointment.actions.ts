@@ -7,6 +7,7 @@ import { Appointment } from "@/types/appwrite.types";
 
 import {
   APPOINTMENT_COLLECTION_ID,
+  PATIENT_COLLECTION_ID,
   DATABASE_ID,
   databases,
   messaging,
@@ -41,25 +42,24 @@ export const getRecentAppointmentList = async () => {
       [Query.orderDesc("$createdAt")]
     );
 
-    // const scheduledAppointments = (
-    //   appointments.documents as Appointment[]
-    // ).filter((appointment) => appointment.status === "scheduled");
-
-    // const pendingAppointments = (
-    //   appointments.documents as Appointment[]
-    // ).filter((appointment) => appointment.status === "pending");
-
-    // const cancelledAppointments = (
-    //   appointments.documents as Appointment[]
-    // ).filter((appointment) => appointment.status === "cancelled");
-
-    // const data = {
-    //   totalCount: appointments.total,
-    //   scheduledCount: scheduledAppointments.length,
-    //   pendingCount: pendingAppointments.length,
-    //   cancelledCount: cancelledAppointments.length,
-    //   documents: appointments.documents,
-    // };
+    // Get patient information for each appointment
+    const appointmentsWithPatients = await Promise.all(
+      (appointments.documents as Appointment[]).map(async (appointment) => {
+        // Assuming there's a patient field in the appointment
+        if (appointment.patient && typeof appointment.patient === "string") {
+          const patient = await databases.getDocument(
+            DATABASE_ID!,
+            PATIENT_COLLECTION_ID!,
+            appointment.patient
+          );
+          return {
+            ...appointment,
+            patient // Add the full patient object
+          };
+        }
+        return appointment;
+      })
+    );
 
     const initialCounts = {
       scheduledCount: 0,
@@ -67,7 +67,7 @@ export const getRecentAppointmentList = async () => {
       cancelledCount: 0,
     };
 
-    const counts = (appointments.documents as Appointment[]).reduce(
+    const counts = (appointmentsWithPatients as Appointment[]).reduce(
       (acc, appointment) => {
         switch (appointment.status) {
           case "scheduled":
@@ -88,7 +88,7 @@ export const getRecentAppointmentList = async () => {
     const data = {
       totalCount: appointments.total,
       ...counts,
-      documents: appointments.documents,
+      documents: appointmentsWithPatients,
     };
 
     return parseStringify(data);
